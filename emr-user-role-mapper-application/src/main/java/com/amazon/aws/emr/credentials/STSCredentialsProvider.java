@@ -105,8 +105,8 @@ public class STSCredentialsProvider implements MetadataCredentialsProvider {
             throw ase;
         } catch (AmazonClientException ace) {
             log.error("AWS Client exception {}", ace.getMessage(), ace);
+            throw ace;
         }
-        return Optional.empty();
     }
 
     private EC2MetadataUtils.IAMSecurityCredential createIAMSecurityCredential(Credentials credentials) {
