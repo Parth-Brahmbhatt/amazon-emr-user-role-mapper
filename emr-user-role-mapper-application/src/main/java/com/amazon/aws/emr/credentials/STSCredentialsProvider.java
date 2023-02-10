@@ -75,7 +75,7 @@ public class STSCredentialsProvider implements MetadataCredentialsProvider {
 
         if (credentials.isPresent() && shouldRefresh(credentials.get())) {
             // TODO: we should consider using Caffeine which provides ttl at item level
-            log.debug("Invalidating the cache for assume role {}", assumeRoleRequest);
+            log.info("Invalidating the cache for assume role {}", assumeRoleRequest);
             /*
              * In case of multiple threads reaching here, we should be alright as locking is at
              * segment level for both invalidate() and get() calls.
@@ -97,7 +97,7 @@ public class STSCredentialsProvider implements MetadataCredentialsProvider {
         try {
             AssumeRoleResult assumeRoleResult = stsClient.assumeRole(assumeRoleRequest);
             EC2MetadataUtils.IAMSecurityCredential credentials = createIAMSecurityCredential(assumeRoleResult.getCredentials());
-            log.debug("Procured credentials from STS for assume role {}", assumeRoleRequest);
+            log.info("Procured credentials from STS for assume role {}", assumeRoleRequest);
             return Optional.of(credentials);
         } catch (AmazonServiceException ase) {
             // This is an internal server error.
