@@ -75,17 +75,11 @@ public class CommandBasedPrincipalResolver extends AbstractPrincipalResolver {
                 throw new TimeoutException(Arrays.toString(command.toArray()) +  " timed out after " + commandTimeoutSeconds + " seconds");
             }
 
-            if (process.exitValue() != 0) {
-                String inputString = IOUtils.toString(process.getInputStream());
-                String errorString = IOUtils.toString(process.getErrorStream());
-                log.error(Arrays.toString(command.toArray()) + " failed " + " inputString = " + inputString + " errorString = " + errorString);
-                throw new RuntimeException("process exited with exit code = " + process.exitValue() + " inputString = " + inputString + " errorString = " + errorString);
-            }
-
             try (BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 List<String> output = br.lines().flatMap(Pattern.compile("\\s+")::splitAsStream).collect(Collectors.toList());
                 if (output == null || output.isEmpty()) {
-                    log.error("got empty groups for command " + command);
+                    String errorString = IOUtils.toString(process.getErrorStream());
+                    log.error("got empty groups for command " + Arrays.toString(command.toArray()) + " with errorString = " + errorString + " and exitcode = " + process.exitValue());
                     throw new RuntimeException("got empty groups for command " + command);
                 }
                 return output;
